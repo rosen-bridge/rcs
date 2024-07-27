@@ -7,3 +7,4 @@ Please check out existing RCS to understand the general expectation of how RCS a
 | Number | Title                         |
 |--------|-------------------------------|
 | [RCS-001](rcs-001.md) | Typescript Unit-Test Standard |
+| [RCS-002](rcs-002.md) | Common Contribution Guides |
