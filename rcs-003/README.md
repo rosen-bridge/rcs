@@ -1,8 +1,10 @@
-# Integrate New Blockchain Into Rosen Bridge
-This document outlines the requirements and steps to integrate a new blockchain into Rosen Bridge.
-
+# RCS-003: Bridge Expansion Kit
+* Author: [@RaaCT0R](https://github.com/RaaCT0R)
+* Created: 27-May-2025
+* Updated: -
 
 ## Contents
+- [Description](#description)
 - [Requirements](#requirements)
 - [Modules](#modules)
   - [Scanner](#scanner)
@@ -32,6 +34,8 @@ This document outlines the requirements and steps to integrate a new blockchain 
   - [Bitcoin Fork](#bitcoin-fork)
 - [Extending Networks](#extending-networks)
 
+## Description
+This document outlines the requirements and steps to integrate a new blockchain into Rosen Bridge.
 
 ## Requirements
 To support a blockchain in Rosen Bridge, two base requirements should be satisfied:
