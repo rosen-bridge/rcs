@@ -572,6 +572,7 @@ Building upon the foundation established in [part 1](#network-package-bases), th
 
 #### Wallet package
 - Add at least one wallet for the chain (_more details to come in the future_), including:
+  - Add the wallet icon as an SVG string in a separate TypeScript file and import it into the Wallet class
   - Wallet connection logic
   - Address fetching logic
   - Balance fetching logic
@@ -584,11 +585,8 @@ Building upon the foundation established in [part 1](#network-package-bases), th
 #### Wallet Configuration in Rosen App
 
 - Configure each wallet inside the `apps/rosen/app/_wallets` directory
-- Each wallet directory must contain the following three files:
-  - `index.ts`: This file should export the wallet instance
-  - `server.ts`: This file should export server-side functions that will be used by the client-side wallet instance
-  - `wallet.ts`: This file should export a new wallet instance configured using the server-side actions
-- After creating the wallet files, add the wallet instance to the `apps/rosen/app/_wallets/index.ts` file to make it available throughout the app
+- Create a file with a name similar to the wallet's name, and have this file export a new wallet instance configured using the server-side actions
+- After creating the wallet file, export the wallet instance from the `apps/rosen/app/_wallets/index.ts` file to make it accessible throughout the app
 
 ### Contracts
 Integration into contracts consists of minting the new chain config tokens on Ergo (such as RWT, AWC, etc.) and minting bridge tokens on Ergo and any other chains that are supposed to support them. Note that this is unrelated to the new blockchain's contracts, since the Rosen Bridge structure requires minimal integration on the new chain and usually doesn't need contract development on it.
