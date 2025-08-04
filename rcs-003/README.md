@@ -1,7 +1,7 @@
 # RCS-003: Bridge Expansion Kit
 * Author: [@RaaCT0R](https://github.com/RaaCT0R)
 * Created: 27-May-2025
-* Updated: -
+* Updated: 04-Aug-2025
 
 ## Contents
 - [Description](#description)
@@ -511,10 +511,9 @@ the chain shared logic, such as:
 These updates are required in the Rosen App (located at `app/rosen`):
 
 - Add the new network package to the `package.json` file
-- Add a new directory to `app/_networks`, named after the new network key. Three files should be included: `client.ts`, `index.ts` and `server.ts`. The `client.ts` file should export a new instance of the network defined in `@rosen-network/NEW_NETWORK_KEY`. The `index.ts` file should simply re-export the `client.ts`. The `server.ts` file should export the server actions that need to be used in the network constructor within the `client.ts` file
-- Implement a function to fetch the chain current height in `app/_actions/calculateFee.ts`
+- Add a new directory to `app/networks`, named after the new network key. Three files should be included: `client.ts`, `index.ts` and `server.ts`. The `client.ts` file should export a new instance of the network defined in `@rosen-network/NEW_NETWORK_KEY`. The `index.ts` file should simply re-export the `client.ts`. The `server.ts` file should export the server actions that need to be used in the network constructor within the `client.ts` file
 - Add network API env var to the `.env.example`
-- Import the client instance in the `app/_networks/index.ts` file
+- Import the client instance in the `app/networks/index.ts` file
 
 #### Asset Calculator
 The new chain logic should be added to the `@rosen-ui/asset-calculator` (located at `packages/asset-calculator`):
@@ -559,6 +558,7 @@ The new chain logic should be added to Rosen Service (located at `app/rosen-serv
 #### Network Package
 Building upon the foundation established in [part 1](#network-package-bases), this section focuses on fully implementing all required functionality in the network package. The implementation should include:
 
+- Implement the functions `getHeight`, `calculateFee`, and `getMinTransfer`
 - Complete implementation of `getMaxTransfer` method:
   - Calculate maximum transferable amount for any asset
   - Consider user balance, network fees, and chain-specific limitations
@@ -572,6 +572,7 @@ Building upon the foundation established in [part 1](#network-package-bases), th
 
 #### Wallet package
 - Add at least one wallet for the chain (_more details to come in the future_), including:
+  - Add the wallet icon as an SVG string in a separate TypeScript file and import it into the Wallet class
   - Wallet connection logic
   - Address fetching logic
   - Balance fetching logic
@@ -583,12 +584,9 @@ Building upon the foundation established in [part 1](#network-package-bases), th
 
 #### Wallet Configuration in Rosen App
 
-- Configure each wallet inside the `apps/rosen/app/_wallets` directory
-- Each wallet directory must contain the following three files:
-  - `index.ts`: This file should export the wallet instance
-  - `server.ts`: This file should export server-side functions that will be used by the client-side wallet instance
-  - `wallet.ts`: This file should export a new wallet instance configured using the server-side actions
-- After creating the wallet files, add the wallet instance to the `apps/rosen/app/_wallets/index.ts` file to make it available throughout the app
+- Configure each wallet inside the `apps/rosen/app/wallets` directory
+- Create a file with a name similar to the wallet's name, and have this file export a new wallet instance configured using the server-side actions
+- After creating the wallet file, export the wallet instance from the `apps/rosen/app/wallets/index.ts` file to make it accessible throughout the app
 
 ### Contracts
 Integration into contracts consists of minting the new chain config tokens on Ergo (such as RWT, AWC, etc.) and minting bridge tokens on Ergo and any other chains that are supposed to support them. Note that this is unrelated to the new blockchain's contracts, since the Rosen Bridge structure requires minimal integration on the new chain and usually doesn't need contract development on it.
