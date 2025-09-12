@@ -34,25 +34,25 @@ Steps to implement a General Scanner for the new network API:
       ```bash
       npx kodegen monorepo add-package
       ```
-    - set package name as `@rosen-bridge/chainx-api-scanner` (e.g., a scanner for Bitcoin based on RPC API will be `@rosen-bridge/bitcoin-rpc-scanner`)
-    - set package path as `./packages/scanners/chainx-api-scanner`
-    - set description as `A Chain-X blockchain scanner based on network API` (same as before, replace `api` with the corresponding network such as RPC, Explorer, GraphQL, etc.)
+    - set package name as `@rosen-bridge/chainx-scanner` (e.g., a scanner for Bitcoin based on RPC API will be `@rosen-bridge/bitcoin-scanner`)
+    - set package path as `./packages/scanners/chainx-scanner`
+    - set description as `A Chain-X blockchain scanner worked with network API` (replace `api` with the corresponding network such as RPC, Explorer, GraphQL, etc.)
     - set package repo url as `https://github.com/rosen-bridge/scanner`
     - enable both features
       - `Prettier and Eslint`
       - `Testing (with coverage support)`
 
-2. Implement a class to interact with the blockchain. It should inherit from the `AbstractNetworkConnector` class (refer to the [`BitcoinRpcNetwork` implementation](https://github.com/rosen-bridge/scanner/blob/dev/packages/scanners/bitcoin-rpc-scanner/lib/BitcoinRpcNetwork.ts) for example).
+2. Implement a class to interact with the blockchain. It should inherit from the `AbstractNetworkConnector` class (refer to the [`BitcoinRpcNetwork` implementation](https://github.com/rosen-bridge/scanner/blob/dev/packages/scanners/bitcoin-scanner/lib/scanner/BitcoinRpcNetwork.ts) for example).
 
     - name convention: `ChainXApiNetwork`
 
-3. Implement the scanner class. It should inherit from the `GeneralScanner` class (refer to the [`BitcoinRpcScanner` implementation](https://github.com/rosen-bridge/scanner/blob/dev/packages/scanners/bitcoin-rpc-scanner/lib/BitcoinRpcScanner.ts) for example). Note that to ensure consistent implementation across all scanners, each scanner starts from `initialHeight + 1`.
+3. Implement the scanner class. It should inherit from the `GeneralScanner` class (refer to the [`BitcoinRpcScanner` implementation](https://github.com/rosen-bridge/scanner/blob/dev/packages/scanners/bitcoin-scanner/lib/scanner/BitcoinRpcScanner.ts) for example). Note that to ensure consistent implementation across all scanners, each scanner starts from `initialHeight + 1`.
 
     - name convention: `ChainXApiScanner`
 
 4. Implement unit tests for all functions of the network class. Note that no real request should be sent in the tests and the connector should be completely mocked.
-    - for tests, refer to [`BitcoinRpcNetwork` tests](https://github.com/rosen-bridge/scanner/blob/dev/packages/scanners/bitcoin-rpc-scanner/tests/BitcoinRpcNetwork.spec.ts)
-    - mocking depends on the network connector. For mocking `axios` refer to [`axios.mock.ts`](https://github.com/rosen-bridge/scanner/blob/dev/packages/scanners/bitcoin-rpc-scanner/tests/mocked/axios.mock.ts) in the `bitcoin-rpc-scanner` tests. For mocking classes, such as the `ethers.JsonRpcProvider`, refer to [`JsonRpcProvider.mock.ts`](https://github.com/rosen-bridge/scanner/blob/dev/packages/scanners/evm-rpc-scanner/tests/mocked/JsonRpcProvider.mock.ts) in the `evm-rpc-scanner` tests.
+    - for tests, refer to [`BitcoinRpcNetwork` tests](https://github.com/rosen-bridge/scanner/blob/dev/packages/scanners/bitcoin-scanner/tests/network/BitcoinRpcNetwork.spec.ts)
+    - mocking depends on the network connector. For mocking `axios` refer to [`axios.mock.ts`](https://github.com/rosen-bridge/scanner/blob/dev/packages/scanners/bitcoin-scanner/tests/mocked/axiosRpc.mock.ts) in the `bitcoin-scanner` tests. For mocking classes, such as the `ethers.JsonRpcProvider`, refer to [`JsonRpcProvider.mock.ts`](https://github.com/rosen-bridge/scanner/blob/dev/packages/scanners/evm-scanner/tests/mocked/JsonRpcProvider.mock.ts) in the `evm-scanner` tests.
 
 ### Rosen Extractor
 Since the Rosen Extractor is responsible for extracting bridge request information, all watchers regardless of the network API should reach the same Rosen Data. Therefore, all Rosen Extractors for a chain should be consistent. For example, while the Esplora network returns transaction input addresses, this information is not available through the RPC API. In such scenarios, either the network cannot be supported, or the data extraction approach must be modified across all Rosen Extractors for that chain.
