@@ -84,11 +84,7 @@ Once the requirements are checked and the adaption is confirmed, multiple Rosen 
 > Note: This section describes adding a new blockchain with a single network (i.e., a specific API or service used to interact with the blockchain). For adding a new network (e.g., new explorer or API) to an existing chain, refer to the [Extending Networks](#extending-networks) section.
 
 > Note: The naming convention is described in each section. the `ChainX` represents the new blockchain name and `Api` represent the network API that is used. Examples for Bitcoin blockchain and RPC API:
-<<<<<<< HEAD
-  - `@rosen-bridge/chainx-scanner` -> `@rosen-bridge/bitcoin-scanner`
-=======
   - `@rosen-chains/chainx-api` -> `@rosen-chains/bitcoin-rpc`
->>>>>>> 636caf1702250afd1a7227723adc114d8cd4bdd2
   - `ChainXChain` -> `BitcoinChain`
   - `ChainXApiNetwork` -> `BitcoinRpcNetwork`
 
@@ -105,26 +101,16 @@ Steps to implement a Scanner for the new blockchain:
       ```
     - set package name as `@rosen-bridge/chainx-scanner` (e.g., a scanner for Bitcoin will be `@rosen-bridge/bitcoin-scanner`)
     - set package path as `./packages/scanners/chainx-scanner`
-<<<<<<< HEAD
-    - set description as `A Chain-X blockchain scanner`
-    - set package repo url as `git+https://github.com/rosen-bridge/scanner.git`
-    - enable both features
-      - `Testing (with coverage support)`
-=======
     - set description as `All scanners for the Chain-X blockchain`
     - set package repo url as `git+https://github.com/rosen-bridge/scanner.git`
     - enable `Testing (with coverage support)` feature
->>>>>>> 636caf1702250afd1a7227723adc114d8cd4bdd2
 
 2. Implement a class to interact with the blockchain. It should inherit from the `AbstractNetworkConnector` class (refer to the [`BitcoinRpcNetwork` implementation](https://github.com/rosen-bridge/scanner/blob/1b37e135e6f9f82d92cea0390a5631e384672713/packages/scanners/bitcoin-scanner/lib/network/bitcoinRpcNetwork.ts) for example).
 
     - name convention: `ChainXApiNetwork`
 
-<<<<<<< HEAD
-=======
     > **Important Note**: In case of implementing the client, the `@rosen-clients/rate-limited-axios` should be used instead of `axios`.
 
->>>>>>> 636caf1702250afd1a7227723adc114d8cd4bdd2
 3. Implement the scanner class. It should inherit from the `GeneralScanner` class (refer to the [`BitcoinRpcScanner` implementation](https://github.com/rosen-bridge/scanner/blob/1b37e135e6f9f82d92cea0390a5631e384672713/packages/scanners/bitcoin-scanner/lib/scanner/bitcoinRpcScanner.ts) for example).
 
     - name convention: `ChainXApiScanner`
@@ -176,21 +162,13 @@ Steps to implement a Rosen Extractor for the new blockchain:
     mkdir chainx
     ```
 
-<<<<<<< HEAD
-2. Implement the Rosen Extractor class. It should inherit from the `AbstractRosenDataExtractor` class (refer to the [`BitcoinRpcRosenExtractor` implementation](https://github.com/rosen-bridge/utils/blob/3e3b64ea504b656554f4dcc0aec4fb27138f4a71/packages/rosen-extractor/lib/getRosenData/bitcoin/bitcoinRpcRosenExtractor.ts) for example).
-=======
 2. Implement the Rosen Extractor class. It should inherit from the `AbstractRosenDataExtractor` class (refer to the [`BitcoinRpcRosenExtractor` implementation](https://github.com/rosen-bridge/utils/blob/12a5c3df42853056d6a7db0dc3c004d3fabcf286/packages/rosen-extractor/lib/getRosenData/bitcoin/bitcoinRpcRosenExtractor.ts) for example).
->>>>>>> 636caf1702250afd1a7227723adc114d8cd4bdd2
 
     - name convention: `ChainXApiRosenExtractor`
 
     > **Important Note**: The generic type should be exactly the same one that is used in the corresponding scanner. The exact type should be defined in the package itself and it cannot be imported from the scanner package.
 
-<<<<<<< HEAD
-3. Implement unit tests for all scenarios (refer to [`BitcoinRpcRosenExtractor` tests](https://github.com/rosen-bridge/utils/blob/3e3b64ea504b656554f4dcc0aec4fb27138f4a71/packages/rosen-extractor/tests/getRosenData/bitcoin/bitcoinRpcRosenExtractor.spec.ts) for example)
-=======
 3. Implement unit tests for all scenarios (refer to [`BitcoinRpcRosenExtractor` tests](https://github.com/rosen-bridge/utils/blob/12a5c3df42853056d6a7db0dc3c004d3fabcf286/packages/rosen-extractor/tests/getRosenData/bitcoin/bitcoinRpcRosenExtractor.spec.ts) for example)
->>>>>>> 636caf1702250afd1a7227723adc114d8cd4bdd2
 
 The new chain should also be added to the `SUPPORTED_CHAINS` list in the [`const.ts` file](https://github.com/rosen-bridge/utils/blob/6315a255314976fb055db3578a2d6d631882142a/packages/rosen-extractor/lib/getRosenData/const.ts).
 
@@ -228,7 +206,7 @@ Steps to implement an Observation Extractor for the new blockchain:
   4. [Abstract Chain Network](#abstract-chain-network)
   
 #### Abstract Chain (Bases)
-This part is mostly about initializing the package, designing the types and researching the required functions. In this section, only the steps are explained and the detailed document on each function is available in the [Abstract Chain README](https://github.com/rosen-bridge/rosen-chains/blob/44c5feac79637ba55213c5654e99737471bceede/packages/abstract-chain/README.md).
+This part is mostly about initializing the package, designing the types and researching the required functions. In this section, only the steps are explained and the detailed document on each function is available in the [Abstract Chain README](https://github.com/rosen-bridge/rosen-chains/blob/dev/packages/abstract-chain/README.md).
 
 There are two types of chains:
 - `AbstractChain`
@@ -263,11 +241,7 @@ Two required classes should be defined:
     throw Error(`not implemented`);
     ```
 
-<<<<<<< HEAD
-An example of this part is the ["Bitcoin: Abstract Network" Merge Request](https://github.com/rosen-bridge/rosen-chains/commit/1afb500f60669b5eeb0f399a755a9f4d7ae9bdd4) (Note that this MR is old and the [current Abstract Chain](https://github.com/rosen-bridge/rosen-chains/blob/44c5feac79637ba55213c5654e99737471bceede/packages/abstract-chain/lib/abstractChain.ts) is slightly different).
-=======
 An example of this part is the ["Bitcoin: Abstract Network" Merge Request](https://github.com/rosen-bridge/rosen-chains/commit/1afb500f60669b5eeb0f399a755a9f4d7ae9bdd4) (Note that this MR is old and the [current Abstract Chain](https://github.com/rosen-bridge/rosen-chains/blob/c738e58770847d063a2de17759221d94f0cb80f9/packages/abstract-chain/lib/abstractChain.ts) is slightly different).
->>>>>>> 636caf1702250afd1a7227723adc114d8cd4bdd2
 
 #### Rosen Extractor (Universal)
 There are two types of Rosen Extractors. Similar to the Scanner, each network requires its own specific Rosen Extractor. For instance, since both Esplora and the RPC API of Bitcoin are supported, two Extractors are needed: `BitcoinEsploraRosenExtractor` and `BitcoinRpcRosenExtractor`. These extractors are network-specific. The second type, Universal, is used in the rosen-chains packages. The main difference between the two types is the structure of the transactions they handle.
@@ -278,21 +252,13 @@ Steps to implement the universal Rosen Extractor for the new blockchain:
 
 1. A directory should already exist for ChainX in the `rosen-extractor` package in the [Utils repository](https://github.com/rosen-bridge/utils/tree/dev/packages/rosen-extractor).
 
-<<<<<<< HEAD
-2. Implement the Rosen Extractor class. It should inherit from the `AbstractRosenDataExtractor` class (refer to the [`BitcoinRosenExtractor` implementation](https://github.com/rosen-bridge/utils/blob/3e3b64ea504b656554f4dcc0aec4fb27138f4a71/packages/rosen-extractor/lib/getRosenData/bitcoin/bitcoinRpcRosenExtractor.ts) for example).
-=======
 2. Implement the Rosen Extractor class. It should inherit from the `AbstractRosenDataExtractor` class (refer to the [`BitcoinRosenExtractor` implementation](https://github.com/rosen-bridge/utils/blob/12a5c3df42853056d6a7db0dc3c004d3fabcf286/packages/rosen-extractor/lib/getRosenData/bitcoin/bitcoinRpcRosenExtractor.ts) for example).
->>>>>>> 636caf1702250afd1a7227723adc114d8cd4bdd2
 
     - name convention: `ChainXRosenExtractor`
 
     > **Important Note**: The generic type should be **`string`**, the stringified JSON of the exact generic type that is used in the chain (i.e. the generic `TxType` which is defined in previous part). The exact type should be defined in the package itself and it cannot be imported from the rosen-chains package.
 
-<<<<<<< HEAD
-3. Implement unit tests for all scenarios (refer to [`BitcoinRosenExtractor` tests](https://github.com/rosen-bridge/utils/blob/3e3b64ea504b656554f4dcc0aec4fb27138f4a71/packages/rosen-extractor/tests/getRosenData/bitcoin/bitcoinRosenExtractor.spec.ts) for example)
-=======
 3. Implement unit tests for all scenarios (refer to [`BitcoinRosenExtractor` tests](https://github.com/rosen-bridge/utils/blob/12a5c3df42853056d6a7db0dc3c004d3fabcf286/packages/rosen-extractor/tests/getRosenData/bitcoin/bitcoinRosenExtractor.spec.ts) for example)
->>>>>>> 636caf1702250afd1a7227723adc114d8cd4bdd2
 
 
 #### Abstract Chain
@@ -315,24 +281,15 @@ Steps to implement the network API for the new blockchain:
     - set package repo url as `https://github.com/rosen-bridge/rosen-chains`
     - enable `Testing (with coverage support)` feature
 
-<<<<<<< HEAD
-2. Implement a class to interact with the blockchain. It should inherit from the `AbstractChainXNetwork` class, which is defined in [part 1](#abstract-chain-bases) and [part 3](#abstract-chain) (refer to the [`BitcionEsploraNetwork` implementation](https://github.com/rosen-bridge/rosen-chains/blob/44c5feac79637ba55213c5654e99737471bceede/packages/networks/bitcoin-esplora/lib/bitcoinEsploraNetwork.ts) for example).
-=======
 2. Implement a class to interact with the blockchain. It should inherit from the `AbstractChainXNetwork` class, which is defined in [part 1](#abstract-chain-bases) and [part 3](#abstract-chain) (refer to the [`BitcionEsploraNetwork` implementation](https://github.com/rosen-bridge/rosen-chains/blob/c738e58770847d063a2de17759221d94f0cb80f9/packages/networks/bitcoin-esplora/lib/bitcoinEsploraNetwork.ts) for example).
->>>>>>> 636caf1702250afd1a7227723adc114d8cd4bdd2
 
     - name convention: `ChainXApiNetwork`
 
     > **Important Note**: Same as the scanner, in case of implementing the client, the `@rosen-clients/rate-limited-axios` should be used instead of `axios`.
 
 3. Implement unit tests for all functions of the network class. Note that no real request should be sent in the tests and the connector should be completely mocked.
-<<<<<<< HEAD
-    - for tests, refer to [`BitcoinEsploraNetwork` tests](https://github.com/rosen-bridge/rosen-chains/blob/44c5feac79637ba55213c5654e99737471bceede/packages/networks/bitcoin-esplora/tests/bitcoinEsploraNetwork.spec.ts)
-    - mocking depends on the network connector. For mocking `axios` refer to [`rateLimitedAxios.mock.ts`](https://github.com/rosen-bridge/rosen-chains/blob/44c5feac79637ba55213c5654e99737471bceede/packages/networks/bitcoin-esplora/tests/mocked/rateLimitedAxios.mock.ts) in the `bitcoin-esplora` tests. For mocking classes, something like the `ethers.JsonRpcProvider`, refer to [`JsonRpcProvider.mock.ts`](https://github.com/rosen-bridge/scanner/blob/221ae1b230326a3986292df5186a83481374b7f8/packages/scanners/evm-scanner/tests/mocked/jsonRpcProvider.mock.ts) in the `evm-scanner` tests.
-=======
     - for tests, refer to [`BitcoinEsploraNetwork` tests](https://github.com/rosen-bridge/rosen-chains/blob/c738e58770847d063a2de17759221d94f0cb80f9/packages/networks/bitcoin-esplora/tests/bitcoinEsploraNetwork.spec.ts)
     - mocking depends on the network connector. For mocking `RateLimitedAxios` refer to [`rateLimitedAxios.mock.ts`](https://github.com/rosen-bridge/rosen-chains/blob/c738e58770847d063a2de17759221d94f0cb80f9/packages/networks/bitcoin-esplora/tests/mocked/rateLimitedAxios.mock.ts) in the `bitcoin-esplora` tests. For mocking classes, something like the `ethers.JsonRpcProvider`, refer to [`JsonRpcProvider.mock.ts`](https://github.com/rosen-bridge/scanner/blob/221ae1b230326a3986292df5186a83481374b7f8/packages/scanners/evm-scanner/tests/mocked/jsonRpcProvider.mock.ts) in the `evm-scanner` tests.
->>>>>>> 636caf1702250afd1a7227723adc114d8cd4bdd2
 
 ### Health Check
 As the name suggests, these packages check the healthiness of some components in both Watcher and Guard services. For new blockchains, only one parameter, the Asset Check, is required.
@@ -640,11 +597,7 @@ Steps to implement the network API for the new blockchain:
 
 2. Implement a class inheriting from the `EvmChain` class, which is defined in the `@rosen-chains/evm` package (refer to the [`BinanceChain` implementation](https://github.com/rosen-bridge/rosen-chains/commit/12c736c0f93d3884d204017e244750e854787c62) for example).
 
-<<<<<<< HEAD
-3. Define the chain name, native token id and chain id number in `constants.ts` file (refer to the [`EthereumChain` implementation](https://github.com/rosen-bridge/rosen-chains/blob/44c5feac79637ba55213c5654e99737471bceede/packages/chains/ethereum/lib/constants.ts) for example).
-=======
 3. Define the chain name, native token id and chain id number in `constants.ts` file (refer to the [`EthereumChain` implementation](https://github.com/rosen-bridge/rosen-chains/blob/c738e58770847d063a2de17759221d94f0cb80f9/packages/chains/ethereum/lib/constants.ts) for example).
->>>>>>> 636caf1702250afd1a7227723adc114d8cd4bdd2
 
 #### Watcher and Guard Service
 Integrating an EVM chain into Watcher and Guard service has no difference with integrating other chains. Note that other than observation extractor and rosen chains class which are explained above, other packages are under `Evm` alias (e.g., `EvmRpcScanner` should be used for Binance) and the chain name and id should be passed to it.

@@ -17,13 +17,8 @@ Adding a new network API is mainly about Watcher and Guard services. This assume
 
 > Note: This document is for adding a new network (e.g., a new explorer API) to an existing chain that already has at least one network API. Please refer to [the main document](./main.md) for implementing the first network API. 
 
-<<<<<<< HEAD
-> Note: The naming convention is described in each section. `ChainX` represents the new blockchain name and `Api` represents the network API that is used. Examples for Bitcoin blockchain and RPC API:
-  - `@rosen-bridge/chainx-scanner` -> `@rosen-bridge/bitcoin-scanner`
-=======
 > Note: The naming convention is described in each section. the `ChainX` represents the new blockchain name and `Api` represent the network API that is used. Examples for Bitcoin blockchain and RPC API:
   - `@rosen-chains/chainx-api` -> `@rosen-chains/bitcoin-rpc`
->>>>>>> 636caf1702250afd1a7227723adc114d8cd4bdd2
   - `ChainXChain` -> `BitcoinChain`
   - `ChainXApiNetwork` -> `BitcoinRpcNetwork`
 
@@ -33,26 +28,13 @@ Supporting a new network API in the Watcher service requires specific implementa
 ### Scanner
 Steps to implement a General Scanner for the new network API:
 
-<<<<<<< HEAD
-1. The scanner package for the chain (e.g., `@rosen-bridge/chainx-scanner`) already exists.  
-   Add your new network-specific implementation inside the same package under:
-   - `lib/network/` → for the network connector (`ChainXApiNetwork`)
-   - `lib/scanner/` → for the scanner class (`ChainXApiScanner`)
-
-2. For each network API, implement a class to interact with the blockchain. The network connector should be added in network directory and the name should follow this pattern ChainXApiNetwork (replace `api` with the corresponding network such as RPC, Explorer, GraphQL, etc.). It should inherit from the `AbstractNetworkConnector` class (refer to the [`BitcoinRpcNetwork` implementation](https://github.com/rosen-bridge/scanner/blob/28d61d0bfe73974d3496616224862657698eb611/packages/scanners/bitcoin-scanner/lib/network/bitcoinRpcNetwork.ts) for example).
-
-    - name convention: `ChainXApiNetwork`
-
-3. For each scanner, implement a scanner class. It should inherit from the `GeneralScanner` class. The scanner should be added in scanner directory and the name should follow this pattern ChainXApiScanner (refer to the [`BitcoinRpcScanner` implementation](https://github.com/rosen-bridge/scanner/blob/28d61d0bfe73974d3496616224862657698eb611/packages/scanners/bitcoin-scanner/lib/scanner/bitcoinRpcScanner.ts) for example). Note that to ensure consistent implementation across all scanners, each scanner starts from `initialHeight + 1`.
-=======
 1. A package should already exist for ChainX as `@rosen-bridge/chainx-scanner` in the [Scanner repository](https://github.com/rosen-bridge/scanner).
 
 2. Implement a class to interact with the blockchain, located in `lib/network/chainXApiNetwork.ts`. It should inherit from the `AbstractNetworkConnector` class (refer to the [`BitcoinRpcNetwork` implementation](https://github.com/rosen-bridge/scanner/blob/28d61d0bfe73974d3496616224862657698eb611/packages/scanners/bitcoin-scanner/lib/network/bitcoinRpcNetwork.ts) for example).
 
     - name convention: `ChainXApiNetwork`
 
-3. Implement the scanner class, located in `lib/scanner/chainXApiNetwork.ts`. It should inherit from the `GeneralScanner` class (refer to the [`BitcoinRpcScanner` implementation](https://github.com/rosen-bridge/scanner/blob/28d61d0bfe73974d3496616224862657698eb611/packages/scanners/bitcoin-scanner/lib/scanner/bitcoinRpcScanner.ts) for example). Note that to ensure consistent implementation across all scanners, each scanner starts from `initialHeight + 1`.
->>>>>>> 636caf1702250afd1a7227723adc114d8cd4bdd2
+3. Implement the scanner class, located in `lib/scanner/chainXApiNetwork.ts`. It should inherit from the `GeneralScanner` class (refer to the [`BitcoinRpcScanner` implementation](https://github.com/rosen-bridge/scanner/blob/28d61d0bfe73974d3496616224862657698eb611/packages/scanners/bitcoin-scanner/lib/scanner/bitcoinRpcScanner.ts) for example).
 
     - name convention: `ChainXApiScanner`
 
@@ -101,11 +83,7 @@ Steps to implement the Observation Extractor for the new network API:
 
 1. A package should already exist for ChainX as `@rosen-bridge/chainx-observation-extractor` in the [Scanner repository](https://github.com/rosen-bridge/scanner).
 
-<<<<<<< HEAD
-2. Implement the extractor class. It should inherit from the `AbstractObservationExtractor` class (refer to the [`BitcoinRpcObservationExtractor` implementation](https://github.com/rosen-bridge/scanner/blob/28d61d0bfe73974d3496616224862657698eb611/packages/observation-extractors/bitcoin-observation-extractor/lib/bitcoinRpcObservationExtractor.ts) for example).
-=======
 2. Implement the observation extractor class. It should inherit from the `AbstractObservationExtractor` class (refer to the [`BitcoinRpcObservationExtractor` implementation](https://github.com/rosen-bridge/scanner/blob/28d61d0bfe73974d3496616224862657698eb611/packages/observation-extractors/bitcoin-observation-extractor/lib/bitcoinRpcObservationExtractor.ts) for example).
->>>>>>> 636caf1702250afd1a7227723adc114d8cd4bdd2
 
     - name convention: `ChainXApiObservationExtractor`
 
