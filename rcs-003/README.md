@@ -365,7 +365,7 @@ Integrating a new chain into the Watcher service consists of adding the new scan
 
     [_View file difference in Bitcoin integration_](https://github.com/rosen-bridge/watcher/commit/a2ea25316a165902b79e8e8e92a06ef948fc1d4d#diff-e4e17a37d67ba40d7721e65ca34a0ec2b3d5f271cba5a9162584d61cd81793e8)
 
-  - The scanner sync health check param should be added to the `HealthCheckSingleton`. Similar to the scanner, a new private function should be defined to initialize the health check parameter and register it into the health check (refer to [this commit](https://github.com/rosen-bridge/watcher/commit/b6b01126fa67e5f15856aebbd3bb61b6bacf005d#diff-e20d1c9cffa1cf2496ab9c729a37c3bdb020bb5fbb3870002dd60804671b0b72) for example).
+  - The scanner sync health check parameter should be registered for the new chain. A new case should be added to the `HealthCheckSingleton.registerScannerSyncHealthCheck` function (refer to [the current implementation](https://github.com/rosen-bridge/watcher/blob/ebe8559350ee462eeb0015318198ed26b9532f8b/src/utils/healthCheck.ts#L196) for example).
 
 
 ### Guard Service
