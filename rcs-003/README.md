@@ -186,7 +186,7 @@ Steps to implement an Observation Extractor for the new blockchain:
     - set package name as `@rosen-bridge/chainx-observation-extractor`
     - set package path as `./packages/observation-extractors/chainx-observation-extractor`
     - set description as `Event observation data extractor for Bitcoin chain`
-    - set package repo url as `https://github.com/rosen-bridge/scanner`
+    - set package repo url as `git+https://github.com/rosen-bridge/scanner.git`
     - enable `Testing (with coverage support)` feature
 
 2. Implement the observation extractor class. It should inherit from the `AbstractObservationExtractor` class (refer to the [`BitcoinRpcObservationExtractor` implementation](https://github.com/rosen-bridge/scanner/blob/1b37e135e6f9f82d92cea0390a5631e384672713/packages/observation-extractors/bitcoin-observation-extractor/lib/bitcoinRpcObservationExtractor.ts) for example).
@@ -227,7 +227,7 @@ After research and design, the package can be initialized:
   - set package name as `@rosen-chains/chainx`
   - set package path as `./packages/chains/chainx`
   - suggested description: `this project contains chainX chain for Rosen-bridge`
-  - set package repo url as `https://github.com/rosen-bridge/rosen-chains`
+  - set package repo url as `git+https://github.com/rosen-bridge/rosen-chains.git`
   - enable `Testing (with coverage support)` feature
 
 Two required classes should be defined:
@@ -278,7 +278,7 @@ Steps to implement the network API for the new blockchain:
     - set package name as `@rosen-chains/chainx-api` (e.g., a network for Bitcoin based on Esplora explorer will be `@rosen-chains/bitcoin-esplora`)
     - set package path as `./packages/networks/chainx-api`
     - set description as `A package to be used as network api provider for @rosen-chains/chainx package`
-    - set package repo url as `https://github.com/rosen-bridge/rosen-chains`
+  - set package repo url as `git+https://github.com/rosen-bridge/rosen-chains.git`
     - enable `Testing (with coverage support)` feature
 
 2. Implement a class to interact with the blockchain. It should inherit from the `AbstractChainXNetwork` class, which is defined in [part 1](#abstract-chain-bases) and [part 3](#abstract-chain) (refer to the [`BitcionEsploraNetwork` implementation](https://github.com/rosen-bridge/rosen-chains/blob/c738e58770847d063a2de17759221d94f0cb80f9/packages/networks/bitcoin-esplora/lib/bitcoinEsploraNetwork.ts) for example).
@@ -592,7 +592,7 @@ Steps to implement the network API for the new blockchain:
   - set package name as `@rosen-chains/chainx`
   - set package path as `./packages/chains/chainx`
   - suggested description: `this project contains chainX chain for Rosen-bridge`
-  - set package repo url as `https://github.com/rosen-bridge/rosen-chains`
+  - set package repo url as `git+https://github.com/rosen-bridge/rosen-chains.git`
   - enable `Testing (with coverage support)` feature
 
 2. Implement a class inheriting from the `EvmChain` class, which is defined in the `@rosen-chains/evm` package (refer to the [`BinanceChain` implementation](https://github.com/rosen-bridge/rosen-chains/commit/12c736c0f93d3884d204017e244750e854787c62) for example).

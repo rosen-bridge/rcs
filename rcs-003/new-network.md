@@ -108,7 +108,7 @@ Steps to implement the network API for the new blockchain:
     - set package name as `@rosen-chains/chainx-api` (e.g., a network for Bitcoin based on Esplora explorer will be `@rosen-chains/bitcoin-esplora`)
     - set package path as `./packages/networks/chainx-api`
     - set description as `A package to be used as network api provider for @rosen-chains/chainx package`
-    - set package repo url as `https://github.com/rosen-bridge/rosen-chains`
+  - set package repo url as `git+https://github.com/rosen-bridge/rosen-chains.git`
     - enable `Testing (with coverage support)` feature
 
 2. Implement a class to interact with the blockchain. It should inherit from the `AbstractChainXNetwork` class which is defined in the `@rosen-chains/chainx` package (refer to the [`BitcoinEsploraNetwork` implementation](https://github.com/rosen-bridge/rosen-chains/blob/42b7e2ee142f2c11404840876e20b7a1ff860061/packages/networks/bitcoin-esplora/lib/bitcoinEsploraNetwork.ts) for example).
