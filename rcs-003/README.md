@@ -148,6 +148,7 @@ The Rosen Extractor module is responsible for extracting bridge request informat
   - _`amount`_: the amount of transfer
   - _`targetChainTokenId`_: the token id on the target blockchain
   - _`sourceTxId`_: the transaction id
+  - _`rawData`_: the Rosen raw metadata of the transaction
 
 Note that the bridge and network fees mentioned above are the fees specified in the transaction, not the actual fees incurred. If the specified fees are lower than the minimum fee (which is configurable and recorded in boxes on the Ergo chain; see the [minimum-fee package](https://github.com/rosen-bridge/utils/tree/dev/packages/boxes/minimum-fee) for more details), the guards will use the minimum fee instead.
 
@@ -171,6 +172,25 @@ Steps to implement a Rosen Extractor for the new blockchain:
 3. Implement unit tests for all scenarios (refer to [`BitcoinRpcRosenExtractor` tests](https://github.com/rosen-bridge/utils/blob/dev/packages/rosen-extractor/tests/getRosenData/bitcoin/BitcoinRpcRosenExtractor.spec.ts) for example)
 
 The new chain should also be added to the `SUPPORTED_CHAINS` list in the [`const.ts` file](https://github.com/rosen-bridge/utils/blob/dev/packages/rosen-extractor/lib/getRosenData/const.ts).
+
+---
+
+The `rawData` field was **not included** in early versions of the Rosen metadata stored in the database.  
+At that time, scanners did not extract or persist the full raw metadata of transactions.
+
+Later, new functionalities required access to this raw metadata.  
+To avoid breaking existing supported networks, a temporary compatibility module named **`raw-data-provider`** was introduced.
+
+The purpose of this module is:
+
+- For **existing supported networks** (those integrated *before* the introduction of `rawData`), it reconstructs or provides the `rawData` field on demand.
+- For **new networks added in the future**, this workaround is **not necessary**.  
+  New Rosen Extractors **must extract and return the `rawData` field directly**, and scanners for new networks will store it in the database from the beginning.
+
+Therefore, `raw-data-provider` is a **temporary backward-compatibility layer** and should **not** be used or extended for new chain integrations.
+
+---
+
 
 ### Observation Extractor
 The observation extractor is the generic class that utilizes the implemented Rosen extractors (discussed in previous section) to extract bridge requests.
