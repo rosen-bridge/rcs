@@ -99,7 +99,7 @@ This section covers implementing the network API interface that the Guard servic
 
 Steps to implement the network API for the new blockchain:
 
-1. Add a new package to the [Rosen Chains repository](https://github.com/rosen-bridge/rosen-chains).
+1. Add a new package to the [Guard Service repository](https://github.com/rosen-bridge/guard-service).
 
     - initialize the package using `kodegen`:
       ```bash
@@ -108,16 +108,16 @@ Steps to implement the network API for the new blockchain:
     - set package name as `@rosen-chains/chainx-api` (e.g., a network for Bitcoin based on Esplora explorer will be `@rosen-chains/bitcoin-esplora`)
     - set package path as `./packages/networks/chainx-api`
     - set description as `A package to be used as network api provider for @rosen-chains/chainx package`
-  - set package repo url as `git+https://github.com/rosen-bridge/rosen-chains.git`
+  - set package repo url as `git+https://github.com/rosen-bridge/guard-service.git`
     - enable `Testing (with coverage support)` feature
 
-2. Implement a class to interact with the blockchain. It should inherit from the `AbstractChainXNetwork` class which is defined in the `@rosen-chains/chainx` package (refer to the [`BitcoinEsploraNetwork` implementation](https://github.com/rosen-bridge/rosen-chains/blob/42b7e2ee142f2c11404840876e20b7a1ff860061/packages/networks/bitcoin-esplora/lib/bitcoinEsploraNetwork.ts) for example).
+2. Implement a class to interact with the blockchain. It should inherit from the `AbstractChainXNetwork` class which is defined in the `@rosen-chains/chainx` package (refer to the [`BitcoinEsploraNetwork` implementation](https://github.com/rosen-bridge/guard-service/blob/42b7e2ee142f2c11404840876e20b7a1ff860061/packages/networks/bitcoin-esplora/lib/bitcoinEsploraNetwork.ts) for example).
 
     - name convention: `ChainXApiNetwork`
 
 3. Implement unit tests for all functions of the network class. Note that no real request should be sent in the tests and the connector should be completely mocked.
-    - for tests, refer to [`BitcoinEsploraNetwork` tests](https://github.com/rosen-bridge/rosen-chains/blob/42b7e2ee142f2c11404840876e20b7a1ff860061/packages/networks/bitcoin-esplora/tests/bitcoinEsploraNetwork.spec.ts)
-    - mocking depends on the network connector. For mocking `axios` refer to [`axios.mock.ts`](https://github.com/rosen-bridge/rosen-chains/blob/42b7e2ee142f2c11404840876e20b7a1ff860061/packages/networks/bitcoin-esplora/tests/mocked/rateLimitedAxios.mock.ts) in the `bitcoin-esplora` tests. For mocking classes, something like the `ethers.JsonRpcProvider`, refer to [`JsonRpcProvider.mock.ts`](https://github.com/rosen-bridge/scanner/blob/28d61d0bfe73974d3496616224862657698eb611/packages/scanners/evm-scanner/tests/mocked/jsonRpcProvider.mock.ts) in the `evm-rpc-scanner` tests.
+    - for tests, refer to [`BitcoinEsploraNetwork` tests](https://github.com/rosen-bridge/guard-service/blob/42b7e2ee142f2c11404840876e20b7a1ff860061/packages/networks/bitcoin-esplora/tests/bitcoinEsploraNetwork.spec.ts)
+    - mocking depends on the network connector. For mocking `axios` refer to [`axios.mock.ts`](https://github.com/rosen-bridge/guard-service/blob/42b7e2ee142f2c11404840876e20b7a1ff860061/packages/networks/bitcoin-esplora/tests/mocked/rateLimitedAxios.mock.ts) in the `bitcoin-esplora` tests. For mocking classes, something like the `ethers.JsonRpcProvider`, refer to [`JsonRpcProvider.mock.ts`](https://github.com/rosen-bridge/scanner/blob/28d61d0bfe73974d3496616224862657698eb611/packages/scanners/evm-scanner/tests/mocked/jsonRpcProvider.mock.ts) in the `evm-rpc-scanner` tests.
 
 ### Asset Check
 Steps to implement an Asset health check parameter for the new blockchain:
