@@ -401,9 +401,13 @@ Integrating a new chain into the Watcher service consists of adding the new scan
 
   - The scanner sync health check parameter should be registered for the new chain. A new case should be added to the `HealthCheckSingleton.registerScannerSyncHealthCheck` function (refer to [the current implementation](https://github.com/rosen-bridge/watcher/blob/ebe8559350ee462eeb0015318198ed26b9532f8b/src/utils/healthCheck.ts#L196) for example).
 
+  - If the chain has any secret configs, such as mnemonic, secret key, auth tokens, etc. it should be added to custom environment variables in the `docker/custom-environment-variables.yaml` path.
+
+    [_View file difference in Bitcoin-Runes integration_](https://github.com/rosen-bridge/watcher/commit/bca79659ece01dc11ce235abc5886fb186b5abe7#diff-a539f2e066889598fd148cd5d815d0bfd6e8c472bf4474a91c441f08c8c3a31b)
+
 
 ### Guard Service
-In order to integrate a new chain into the Guard service, the following changes are required:
+In order to integrate a new chain into the Guard service, the following changes to it's service (which is located at [`services/guard-service/`](https://github.com/rosen-bridge/guard-service/tree/dev/services/guard-service)) are required:
 
   - A config class for the new chain should be defined. Other than four addresses and confirmations which are required for every chain, additional may be required. The required config interface is defined in the [Abstract Chain](#abstract-chain) section. This class should be defined in `src/configs/` path with `GuardsChainXConfigs` as the name convention.
 
@@ -436,6 +440,10 @@ In order to integrate a new chain into the Guard service, the following changes 
     [_View file difference in Ethereum integration_](https://github.com/rosen-bridge/guard-service/commit/a4e828f287519d6ebb871d520b61bf2c135da748)
 
   - The new chain packages should be referenced in the [`tsconfig` file of the `guard-service`](https://github.com/rosen-bridge/guard-service/blob/dev/services/guard-service/tsconfig.json).
+
+  - The new chain should be integrated to the `BalanceHandler` by defining the `tokensPerIteration` config for it and initializing it in the `constructor` (`9999` should be used unless fetching all tokens exceeds the endpoint rate limit, which strongly depends on the implementation of the `getAddressBalance` in the chain).
+
+    [_View file difference in Bitcoin-Runes integration (only `default.yaml` and `BalanceHandler.ts` changes are related in this commit)_](https://github.com/rosen-bridge/guard-service/commit/34b45674bb66ab19d1dcebdfd6d760bfc40c8778#diff-81fb2e87fbeaa7618aa94279eb87fbe9869a9635508356c685d2aeb7b7cc0f8b)
 
 ### UI
 [Rosen UI Repository](https://github.com/rosen-bridge/ui) is composed of multiple applications and various packages. To integrate a new blockchain into the UI, several critical steps must be undertaken, including the implementation of new chain logics, such as lock transaction generation, and ensuring compatibility with wallets—either by adding the new chain to an existing wallet or by developing a new wallet entirely.
