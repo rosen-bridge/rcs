@@ -6,6 +6,7 @@
 ## Contents
 - [Description](#description)
 - [Requirements](#requirements)
+- [Integration Notes](#integration-notes)
 - [Modules](#modules)
   - [Scanner](#scanner)
   - [Address Codec](#address-codec)
@@ -38,7 +39,7 @@
 This document outlines the requirements and steps to integrate a new blockchain into Rosen Bridge.
 
 ## Requirements
-To support a blockchain in Rosen Bridge, two base requirements should be satisfied:
+To support a blockchain in Rosen Bridge, three base requirements should be satisfied:
 
 1. Multi-Signer Addresses
 
@@ -47,6 +48,11 @@ To support a blockchain in Rosen Bridge, two base requirements should be satisfi
 2. Data Writing
 
     To bridge an asset, in addition to transferring the asset to the bridge address, various data including fee, target chain and target address should be provided. The data is written on the transferring transaction which is also known as the lock transaction.
+
+3. Sufficient Endpoints (Node, Explorer)
+
+    The bridge modules depend on blockchain endpoints to receive data. There must be sufficient node and/or explorer endpoints with the required APIs to be used by Watchers and Guards. Relying on a single public node—especially when setting up a node requires high resources—**is not sufficient**, as it introduces a centralized point of failure and weakens decentralization. Multiple independent endpoints should be available to preserve availability and decentralization.
+
 
 Based on the chain architecture and the integration type, some requirements may already be present or be omitted:
 
@@ -70,16 +76,44 @@ Based on the chain architecture and the integration type, some requirements may 
 
     The time between a bridge request and its payment on the target chain can be lengthy for various reasons. During this period, transaction fees may fluctuate significantly, with some blockchains, like Ethereum, experiencing increases of up to 700% in just one or two hours. The design should minimize the impact of these fluctuations to prevent asset loss and avoid unexpected issues.
 
+The integration team must provide a single integration document describing how the implementation satisfies the above requirements. This document should systematically address each of the above requirements and clearly explain the adopted solution, including references to relevant modules and references.
+
+In addition, the integration team is encouraged to include relevant blockchain-specific technical information to improve clarity, maintainability, and future extensibility of the integration. Such information may include (but is not limited to):
+
+- The typical **block time** of the network
+
+- The **confirmation policy** used by the implementation (e.g., number of confirmations required before considering a transaction final)
+
+- Relevant BIP32 / key derivation parameters and address format specifications, if applicable (e.g., [the network parameters passing to the `bitcoinjs-lib`](https://github.com/bitcoinjs/bitcoinjs-lib/blob/dc8d9e26f2b9c7380aec7877155bde97594a9ade/ts_src/networks.ts#L11))
+
+- Approximate resource requirements for running a full node (CPU, memory, storage, bandwidth)
+
+While the blockchain-specific details listed above are not mandatory, providing them is recommended to facilitate review, auditing, and long-term maintenance.
+
+
+## Integration Notes
+Before diving into the modules, it's worth to mention some notes about the integration phases and procedure:
+
+- Each Pull Request should contain **at least One** changeset file. Rosen repositories uses [changesets](https://github.com/changesets/changesets) to manage versioning and publishing.
+  - Changing the `CHANGELOG.md` file directly should be avoided
+  - The `npx changeset` command should be executed at the root of the monorepo to add a changeset
+  - Only one package should be selected, unless multiple packages are going to have **exactly the same changelog text**
+  - Almost all changesets should be in `minor` level (with the exception of the `guard-service` integration PR, which is currently `major`)
+- No unrelated file should be changed in the PR (In case that a file is being changed by `lint` or similar commands, contact the Rosen team to investigate/fix it).
+- Committing using the `--no-verify` flag should be avoided. Some script such as `lint` and `prettify` are executed in the pre-commit stage and ignoring them results in the CI/CD workflow failure.
+- New packages (such as [Observation Extractor section](#observation-extractor)) should be created with zero version (`0.0.0`) and a single changeset, `initialize the package`, with `minor` level. 
+
 
 ## Modules
 Once the requirements are checked and the adaption is confirmed, multiple Rosen modules should be updated to support the new blockchain. It is highly recommended to implement them in the following order:
 
   1. [Scanner](#scanner)
-  2. [Rosen Extractor (Network-based)](#rosen-extractor-network-based)
-  3. [Observation Extractor](#observation-extractor)
-  4. [Rosen Chain](#rosen-chain)
-  5. [Health Check](#health-check)
-  6. [UI (Lock Transaction)](#ui-lock-transaction)
+  2. [Address Codec](#address-codec)
+  3. [Rosen Extractor (Network-based)](#rosen-extractor-network-based)
+  4. [Observation Extractor](#observation-extractor)
+  5. [Rosen Chain](#rosen-chain)
+  6. [Health Check](#health-check)
+  7. [UI (Lock Transaction)](#ui-lock-transaction)
 
 > Note: This section describes adding a new blockchain with a single network (i.e., a specific API or service used to interact with the blockchain). For adding a new network (e.g., new explorer or API) to an existing chain, refer to the [Extending Networks](#extending-networks) section.
 
@@ -128,13 +162,13 @@ Steps to integrate the new blockchain into Address Codec, which is in the [Utils
 
 2. Implement the encoder in [`encoder.ts` file](https://github.com/rosen-bridge/utils/blob/6315a255314976fb055db3578a2d6d631882142a/packages/address-codec/lib/encoder.ts). Note that the encoded address should be a hex string **without any leading `0x`**.
 
-2. Implement the decoder in [`decoder.ts` file](https://github.com/rosen-bridge/utils/blob/6315a255314976fb055db3578a2d6d631882142a/packages/address-codec/lib/decoder.ts).
+3. Implement the decoder in [`decoder.ts` file](https://github.com/rosen-bridge/utils/blob/6315a255314976fb055db3578a2d6d631882142a/packages/address-codec/lib/decoder.ts).
 
-3. Implement the validation logic in [`validator.ts` file](https://github.com/rosen-bridge/utils/blob/6315a255314976fb055db3578a2d6d631882142a/packages/address-codec/lib/validator.ts).
+4. Implement the validation logic in [`validator.ts` file](https://github.com/rosen-bridge/utils/blob/6315a255314976fb055db3578a2d6d631882142a/packages/address-codec/lib/validator.ts).
 
   [_View file difference in Doge integration_](https://github.com/rosen-bridge/utils/commit/fc41c1386bb00e1a798f4159aa97e365bed6e85b)
 
-4. Implement unit tests for all scenarios (refer to [Doge integration tests](https://github.com/rosen-bridge/utils/commit/9c8886cfb0b337179c37f8afbe887a446f123a52) for example)
+5. Implement unit tests for all scenarios (refer to [Doge integration tests](https://github.com/rosen-bridge/utils/commit/9c8886cfb0b337179c37f8afbe887a446f123a52) for example)
 
 
 ### Rosen Extractor (Network-based)
@@ -198,7 +232,7 @@ Steps to implement an Observation Extractor for the new blockchain:
 3. The unit tests are required only if the `processTransactions` function is re-implemented or any logic is added to the package.
 
 ### Rosen Chain
-[The `@rosen-chains` packages](https://github.com/rosen-bridge/rosen-chains) contain the most functionalities of the new blockchain and mainly is used in the Guard Service. For the sake of simplicity, the implementation is divided into four parts and it is highly recommended to implement them in the following order:
+The `@rosen-chains` packages (which are included in the `chains` and `networks` directories of the [Guard service monorepo](https://github.com/rosen-bridge/guard-service/tree/dev/packages)) contain the most functionalities of the new blockchain and mainly is used in the Guard service. For the sake of simplicity, the implementation is divided into four parts and it is highly recommended to implement them in the following order:
 
   1. [Abstract Chain (Bases)](#abstract-chain-bases)
   2. [Rosen Extractor (Universal)](#rosen-extractor-universal)
@@ -206,7 +240,7 @@ Steps to implement an Observation Extractor for the new blockchain:
   4. [Abstract Chain Network](#abstract-chain-network)
   
 #### Abstract Chain (Bases)
-This part is mostly about initializing the package, designing the types and researching the required functions. In this section, only the steps are explained and the detailed document on each function is available in the [Abstract Chain README](https://github.com/rosen-bridge/rosen-chains/blob/dev/packages/abstract-chain/README.md).
+This part is mostly about initializing the package, designing the types and researching the required functions. In this section, only the steps are explained and the detailed document on each function is available in the [Abstract Chain README](https://github.com/rosen-bridge/guard-service/blob/dev/packages/abstract-chain/README.md).
 
 There are two types of chains:
 - `AbstractChain`
@@ -227,7 +261,7 @@ After research and design, the package can be initialized:
   - set package name as `@rosen-chains/chainx`
   - set package path as `./packages/chains/chainx`
   - suggested description: `this project contains chainX chain for Rosen-bridge`
-  - set package repo url as `git+https://github.com/rosen-bridge/rosen-chains.git`
+  - set package repo url as `git+https://github.com/rosen-bridge/guard-service.git`
   - enable `Testing (with coverage support)` feature
 
 Two required classes should be defined:
@@ -241,7 +275,7 @@ Two required classes should be defined:
     throw Error(`not implemented`);
     ```
 
-An example of this part is the ["Bitcoin: Abstract Network" Merge Request](https://github.com/rosen-bridge/rosen-chains/commit/1afb500f60669b5eeb0f399a755a9f4d7ae9bdd4) (Note that this MR is old and the [current Abstract Chain](https://github.com/rosen-bridge/rosen-chains/blob/c738e58770847d063a2de17759221d94f0cb80f9/packages/abstract-chain/lib/abstractChain.ts) is slightly different).
+An example of this part is the ["Bitcoin: Abstract Network" Merge Request](https://github.com/rosen-bridge/guard-service/commit/1afb500f60669b5eeb0f399a755a9f4d7ae9bdd4) (Note that this MR is old and the [current Abstract Chain](https://github.com/rosen-bridge/guard-service/blob/4211e09aad2e8d81c103823b1d0a54874b67f708/packages/abstract-chain/lib/abstractChain.ts) is slightly different).
 
 #### Rosen Extractor (Universal)
 There are two types of Rosen Extractors. Similar to the Scanner, each network requires its own specific Rosen Extractor. For instance, since both Esplora and the RPC API of Bitcoin are supported, two Extractors are needed: `BitcoinEsploraRosenExtractor` and `BitcoinRpcRosenExtractor`. These extractors are network-specific. The second type, Universal, is used in the rosen-chains packages. The main difference between the two types is the structure of the transactions they handle.
@@ -269,7 +303,7 @@ The final part of Rosen Chains implementation is implementing the first network 
 
 Steps to implement the network API for the new blockchain:
 
-1. Add a new package to the [Rosen Chains repository](https://github.com/rosen-bridge/rosen-chains).
+1. Add a new package to the [Guard service repository](https://github.com/rosen-bridge/guard-service).
 
     - initialize the package using `kodegen`:
       ```bash
@@ -278,18 +312,18 @@ Steps to implement the network API for the new blockchain:
     - set package name as `@rosen-chains/chainx-api` (e.g., a network for Bitcoin based on Esplora explorer will be `@rosen-chains/bitcoin-esplora`)
     - set package path as `./packages/networks/chainx-api`
     - set description as `A package to be used as network api provider for @rosen-chains/chainx package`
-  - set package repo url as `git+https://github.com/rosen-bridge/rosen-chains.git`
+  - set package repo url as `git+https://github.com/rosen-bridge/guard-service.git`
     - enable `Testing (with coverage support)` feature
 
-2. Implement a class to interact with the blockchain. It should inherit from the `AbstractChainXNetwork` class, which is defined in [part 1](#abstract-chain-bases) and [part 3](#abstract-chain) (refer to the [`BitcionEsploraNetwork` implementation](https://github.com/rosen-bridge/rosen-chains/blob/c738e58770847d063a2de17759221d94f0cb80f9/packages/networks/bitcoin-esplora/lib/bitcoinEsploraNetwork.ts) for example).
+2. Implement a class to interact with the blockchain. It should inherit from the `AbstractChainXNetwork` class, which is defined in [part 1](#abstract-chain-bases) and [part 3](#abstract-chain) (refer to the [`BitcionEsploraNetwork` implementation](https://github.com/rosen-bridge/guard-service/blob/c738e58770847d063a2de17759221d94f0cb80f9/packages/networks/bitcoin-esplora/lib/bitcoinEsploraNetwork.ts) for example).
 
     - name convention: `ChainXApiNetwork`
 
     > **Important Note**: Same as the scanner, in case of implementing the client, the `@rosen-clients/rate-limited-axios` should be used instead of `axios`.
 
 3. Implement unit tests for all functions of the network class. Note that no real request should be sent in the tests and the connector should be completely mocked.
-    - for tests, refer to [`BitcoinEsploraNetwork` tests](https://github.com/rosen-bridge/rosen-chains/blob/c738e58770847d063a2de17759221d94f0cb80f9/packages/networks/bitcoin-esplora/tests/bitcoinEsploraNetwork.spec.ts)
-    - mocking depends on the network connector. For mocking `RateLimitedAxios` refer to [`rateLimitedAxios.mock.ts`](https://github.com/rosen-bridge/rosen-chains/blob/c738e58770847d063a2de17759221d94f0cb80f9/packages/networks/bitcoin-esplora/tests/mocked/rateLimitedAxios.mock.ts) in the `bitcoin-esplora` tests. For mocking classes, something like the `ethers.JsonRpcProvider`, refer to [`JsonRpcProvider.mock.ts`](https://github.com/rosen-bridge/scanner/blob/221ae1b230326a3986292df5186a83481374b7f8/packages/scanners/evm-scanner/tests/mocked/jsonRpcProvider.mock.ts) in the `evm-scanner` tests.
+    - for tests, refer to [`BitcoinEsploraNetwork` tests](https://github.com/rosen-bridge/guard-service/blob/c738e58770847d063a2de17759221d94f0cb80f9/packages/networks/bitcoin-esplora/tests/bitcoinEsploraNetwork.spec.ts)
+    - mocking depends on the network connector. For mocking `RateLimitedAxios` refer to [`rateLimitedAxios.mock.ts`](https://github.com/rosen-bridge/guard-service/blob/c738e58770847d063a2de17759221d94f0cb80f9/packages/networks/bitcoin-esplora/tests/mocked/rateLimitedAxios.mock.ts) in the `bitcoin-esplora` tests. For mocking classes, something like the `ethers.JsonRpcProvider`, refer to [`JsonRpcProvider.mock.ts`](https://github.com/rosen-bridge/scanner/blob/221ae1b230326a3986292df5186a83481374b7f8/packages/scanners/evm-scanner/tests/mocked/jsonRpcProvider.mock.ts) in the `evm-scanner` tests.
 
 ### Health Check
 As the name suggests, these packages check the healthiness of some components in both Watcher and Guard services. For new blockchains, only one parameter, the Asset Check, is required.
@@ -367,9 +401,13 @@ Integrating a new chain into the Watcher service consists of adding the new scan
 
   - The scanner sync health check parameter should be registered for the new chain. A new case should be added to the `HealthCheckSingleton.registerScannerSyncHealthCheck` function (refer to [the current implementation](https://github.com/rosen-bridge/watcher/blob/ebe8559350ee462eeb0015318198ed26b9532f8b/src/utils/healthCheck.ts#L196) for example).
 
+  - If the chain has any secret configs, such as mnemonic, secret key, auth tokens, etc. it should be added to custom environment variables in the `docker/custom-environment-variables.yaml` path.
+
+    [_View file difference in Bitcoin-Runes integration_](https://github.com/rosen-bridge/watcher/commit/bca79659ece01dc11ce235abc5886fb186b5abe7#diff-a539f2e066889598fd148cd5d815d0bfd6e8c472bf4474a91c441f08c8c3a31b)
+
 
 ### Guard Service
-In order to integrate a new chain into the Guard service, the following changes are required:
+In order to integrate a new chain into the Guard service, the following changes to it's service (which is located at [`services/guard-service/`](https://github.com/rosen-bridge/guard-service/tree/dev/services/guard-service)) are required:
 
   - A config class for the new chain should be defined. Other than four addresses and confirmations which are required for every chain, additional may be required. The required config interface is defined in the [Abstract Chain](#abstract-chain) section. This class should be defined in `src/configs/` path with `GuardsChainXConfigs` as the name convention.
 
@@ -400,6 +438,12 @@ In order to integrate a new chain into the Guard service, the following changes 
   - If the chain has any secret configs, such as mnemonic, secret key, auth tokens, etc. it should be added to custom environment variables in the `docker/custom-environment-variables.yaml` path.
 
     [_View file difference in Ethereum integration_](https://github.com/rosen-bridge/guard-service/commit/a4e828f287519d6ebb871d520b61bf2c135da748)
+
+  - The new chain packages should be referenced in the [`tsconfig` file of the `guard-service`](https://github.com/rosen-bridge/guard-service/blob/dev/services/guard-service/tsconfig.json).
+
+  - The new chain should be integrated to the `BalanceHandler` by defining the `tokensPerIteration` config for it and initializing it in the `constructor` (`9999` should be used unless fetching all tokens exceeds the endpoint rate limit, which strongly depends on the implementation of the `getAddressBalance` in the chain).
+
+    [_View file difference in Bitcoin-Runes integration (only `default.yaml` and `BalanceHandler.ts` changes are related in this commit)_](https://github.com/rosen-bridge/guard-service/commit/34b45674bb66ab19d1dcebdfd6d760bfc40c8778#diff-81fb2e87fbeaa7618aa94279eb87fbe9869a9635508356c685d2aeb7b7cc0f8b)
 
 ### UI
 [Rosen UI Repository](https://github.com/rosen-bridge/ui) is composed of multiple applications and various packages. To integrate a new blockchain into the UI, several critical steps must be undertaken, including the implementation of new chain logics, such as lock transaction generation, and ensuring compatibility with wallets—either by adding the new chain to an existing wallet or by developing a new wallet entirely.
@@ -583,7 +627,7 @@ A package is already exist for EVM as `@rosen-bridge/evm-observation-extractor` 
 #### EVM Rosen Chain
 Steps to implement the network API for the new blockchain:
 
-1. Add a new package to the [Rosen Chains repository](https://github.com/rosen-bridge/rosen-chains).
+1. Add a new package to the [Guard service repository](https://github.com/rosen-bridge/guard-service).
 
     - initialize the package using `kodegen`:
       ```bash
@@ -592,15 +636,15 @@ Steps to implement the network API for the new blockchain:
   - set package name as `@rosen-chains/chainx`
   - set package path as `./packages/chains/chainx`
   - suggested description: `this project contains chainX chain for Rosen-bridge`
-  - set package repo url as `git+https://github.com/rosen-bridge/rosen-chains.git`
+  - set package repo url as `git+https://github.com/rosen-bridge/guard-service.git`
   - enable `Testing (with coverage support)` feature
 
-2. Implement a class inheriting from the `EvmChain` class, which is defined in the `@rosen-chains/evm` package (refer to the [`BinanceChain` implementation](https://github.com/rosen-bridge/rosen-chains/commit/12c736c0f93d3884d204017e244750e854787c62) for example).
+2. Implement a class inheriting from the `EvmChain` class, which is defined in the `@rosen-chains/evm` package (refer to the [`BinanceChain` implementation](https://github.com/rosen-bridge/guard-service/commit/12c736c0f93d3884d204017e244750e854787c62) for example).
 
-3. Define the chain name, native token id and chain id number in `constants.ts` file (refer to the [`EthereumChain` implementation](https://github.com/rosen-bridge/rosen-chains/blob/c738e58770847d063a2de17759221d94f0cb80f9/packages/chains/ethereum/lib/constants.ts) for example).
+3. Define the chain name, native token id and chain id number in `constants.ts` file (refer to the [`EthereumChain` implementation](https://github.com/rosen-bridge/guard-service/blob/c738e58770847d063a2de17759221d94f0cb80f9/packages/chains/ethereum/lib/constants.ts) for example).
 
 #### Watcher and Guard Service
-Integrating an EVM chain into Watcher and Guard service has no difference with integrating other chains. Note that other than observation extractor and rosen chains class which are explained above, other packages are under `Evm` alias (e.g., `EvmRpcScanner` should be used for Binance) and the chain name and id should be passed to it.
+Integrating an EVM chain into Watcher and Guard services has no difference with integrating other chains. Note that other than observation extractor and rosen chains class which are explained above, other packages are under `Evm` alias (e.g., `EvmRpcScanner` should be used for Binance) and the chain name and id should be passed to it.
 
 ### Bitcoin Fork
 _This section is unavailable for now; since Bitcoin modules are not implemented in an abstract matter. It will be updated after refactoring Bitcoin modules for this purpose._
