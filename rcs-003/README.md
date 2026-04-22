@@ -459,10 +459,11 @@ To ensure a smooth and organized integration, the following steps should be prio
       - [Network Package (Bases)](#network-package-bases)
       - [Rosen App](#rosen-app)
   2. [Asset Calculator](#asset-calculator)
-  3. [Rosen Service](#rosen-service)
-  4. [Network Package](#network-package)
-  5. [Wallet package](#wallet-package)
-  6. [Wallet Configuration in Rosen App](#wallet-configuration-in-rosen-app)
+  3. [Asset Data Adapter](#asset-data-adapter)
+  4. [Rosen Service](#rosen-service)
+  5. [Network Package](#network-package)
+  6. [Wallet package](#wallet-package)
+  7. [Wallet Configuration in Rosen App](#wallet-configuration-in-rosen-app)
 
   > Note: All changes of step 1 should be implemented in a single merge request.
   
@@ -524,39 +525,30 @@ The new chain logic should be added to the `@rosen-ui/asset-calculator` (located
 - A chain calculator class should be added in the `lib/calculator/chains` directory, extending `AbstractCalculator`, and then configured in `lib/asset-calculator.ts`
 - Add a chain-specific interface that inherits from `CalculatorInterface` to the `lib/interfaces.ts` file
 
-#### Rosen Service
-The new chain logic should be added to Rosen Service (located at `app/rosen-service`):
+### Asset Data Adapter
+The new chain logic should be added to the `@rosen-ui/asset-data-adapter` (located at `packages/asset-data-adapter`):
 
-- Configure asset calculator for Rosen service in `config/default.yaml`, providing the list of addresses to watch, network API urls, etc.
-- Add chain configs (addresses, backend urls, RWT token id, etc.) in `src/configs.ts` file
-- Add a scanner for the chain (in `src/scanner/chains` directory), and add it to the list of scanners in `scanner-service.ts`
-- Add an observation extractor for the chain (inside of `src/observation/chains`), and add it to `observationService` object  in `observation-service.ts`
-- Add the event trigger extractor for the chain (inside of `src/event-trigger/event-trigger-service.ts`)
-- Add relevant constants to `constants.ts`, such as scanning intervals
-- The `start` function in `src/calculator/calculator-service.ts` should be updated by adding chain configurations to the `AssetCalculator` constructor parameters. These changes depend on the updates in the `@rosen-ui/asset-calculator` package, which must be applied first before updating the mentioned file
+- A chain data adapter class should be added in the `lib` directory, extending `AbstractDataAdapter`, and then exported in `lib/index.ts`
+- Complete `getRawTotalSupply` and `getAddressAssets` methods in chain data adapter class 
+
+#### Rosen Service
+The new chain logic should be added to Rosen Service (located at `app/rosen-service2`):
+
+- Add chain configs (scanInterval, backend urls,initialHeight, etc.) in `configs/schema.json` file
+- Add a scanner for the chain (in `src/scanners` directory),and write a `buildChainxNetworkScannerWithExtractors` for create scanner of chainX related network and register observation extractor then add it to the list of scanners in `generateAndRegisterScannersWithExtractors` inside of `src/services/scanner.ts`
+- Add the event trigger extractor for the chain (inside of `src/service/ergoExtractor.ts`)
+- Add relevant constants to `constants.ts`, such as block time
+- The `createChainSpecificDataAdapter` function in `src/services/assetDataAdapters.ts` should be updated by adding chain configurations. These changes depend on the updates in the `@rosen-ui/asset-data-adapter` package, which must be applied first before updating the mentioned file
 - Add two new keys, `chainXScannerWarnDiff` and `chainXScannerCriticalDiff`, under the `healthCheck` section in the `apps/rosen-service/config/default.yaml` file
   ```
   healthCheck:
     chainXScannerWarnDiff: <value>
     chainXScannerCriticalDiff: <value>
   ```
+- set flag True for active parameter in `local.yml` for chainX then `constructor` in `apps/rosen-service2/src/services/healthCheck.ts`  add new health check instance for the new chain scanner
+- Modify the `schema.json` file in `apps/rosen-service2/config/` to include the new keys, ensuring they are properly loaded from the configuration
 
-- Update the `registerAllHealthChecks` function in `apps/rosen-service/src/health-check/health-check-service.ts` by adding a new health check instance for the new chain scanner inside the `checks` array
-  ```ts
-  const checks = [
-    ...
-    {
-      instance: new ScannerSyncHealthCheckParam(),
-      label: 'chainX',
-    },
-    ...
-  ];
-  ```
-
-- Define the required constant keys in the `apps/rosen-service/src/constants.ts` file
-- Modify the `getConfig` function in `apps/rosen-service/src/configs.ts` to include the new keys under the `healthCheck` section, ensuring they are properly loaded from the configuration
-
-    [_View file difference in Ethereum integration for some of them_](https://github.com/rosen-bridge/ui/commit/4ae4c3bdce335b5280777b85cce9dada7455e0e7)
+    [_View file difference in bitcoin-runes integration for some of them_](https://github.com/rosen-bridge/ui/commit/1145634a2c33982187083468fd9c5d30ff07f72d)
 
 #### Network Package
 Building upon the foundation established in [part 1](#network-package-bases), this section focuses on fully implementing all required functionality in the network package. The implementation should include:
