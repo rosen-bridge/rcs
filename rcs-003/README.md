@@ -534,19 +534,23 @@ The new chain logic should be added to the `@rosen-ui/asset-data-adapter` (locat
 #### Rosen Service
 The new chain logic should be integrated into Rosen Service (located at `app/rosen-service2`):
 
-- Add chain configuration (scanInterval, chain networks configuration, initialHeight, adapter configuration only if the target chain requires custom asset handling) under the chains section of `configs/schema.json` file
-  [_View file difference in bitcoin-runes integration for some of them_](https://github.com/rosen-bridge/ui/commit/1145634a2c33982187083468fd9c5d30ff07f72d).
-- Create a new scanner file for the chain inside the src/scanners/ directory, and Implement the `buildChainNetworkScannerWithExtractors` function to initialize the scanner and register its observation extractor. then Import this function into `src/services/scanner.ts` and add it to the scanner list inside `generateAndRegisterScannersWithExtractors`.
+- Add chain configuration under the chains section of `configs/schema.json` file. The configuration must include:
+    - scanInterval
+    - chain networks configuration
+    - initialHeight
+    - adapter configuration (If it needs any, other than the network configuration)
+
+
+    [_View file difference in bitcoin-runes integration for some of them_](https://github.com/rosen-bridge/ui/commit/1145634a2c33982187083468fd9c5d30ff07f72d#diff-30e9e14539d81e350b86724440fd796c8e6e51f8faf4bd88747332fabacd79ea).
+- Create a new scanner file for the chain inside the `src/scanners/` directory, and Implement the `buildChainNetworkScannerWithExtractors` function to initialize the scanner and register its observation extractor. then Import this function into `src/services/scanner.ts` and add it to the scanner list inside `generateAndRegisterScannersWithExtractors`.
 - Register the event trigger extractor for the new chain inside `src/services/ergoExtractor.ts`.
 - Add the exact block time constant for the new chain in `constants.ts`.
-- The `@rosen-ui/asset-data-adapter` package must be updated with the new chain support.
 - Add the block difference warning and critical threshold keys under the healthCheck section in `apps/rosen-service/config/default.yaml`.
   ```
   healthCheck:
     chainXScannerWarnDiff: <value>
     chainXScannerCriticalDiff: <value>
   ```
-- set flag True for active parameter in `local.yml` for chainX then health check service will automatically instantiate the `ScannerSyncHealthCheckParam`.
 
 #### Network Package
 Building upon the foundation established in [part 1](#network-package-bases), this section focuses on fully implementing all required functionality in the network package. The implementation should include:
