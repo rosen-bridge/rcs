@@ -529,7 +529,7 @@ The new chain logic should be added to the `@rosen-ui/asset-calculator` (located
 The new chain logic should be added to the `@rosen-ui/asset-data-adapter` (located at `packages/asset-data-adapter`):
 
 - A chain data adapter class should be added in the `lib` directory, extending `AbstractDataAdapter`, and then exported in `lib/index.ts`
-- Complete `getRawTotalSupply` and `getAddressAssets` methods in chain data adapter class 
+- The `getRawTotalSupply` and `getAddressAssets` functions should be implemented in the new chain data adapter class 
 
 #### Rosen Service
 The new chain logic should be added to Rosen Service (located at `app/rosen-service2`):
