@@ -532,23 +532,21 @@ The new chain logic should be added to the `@rosen-ui/asset-data-adapter` (locat
 - The `getRawTotalSupply` and `getAddressAssets` functions should be implemented in the new chain data adapter class 
 
 #### Rosen Service
-The new chain logic should be added to Rosen Service (located at `app/rosen-service2`):
+The new chain logic should be integrated into Rosen Service (located at `app/rosen-service2`):
 
-- Add chain configs (scanInterval, backend urls,initialHeight, etc.) in `configs/schema.json` file
-- Add a scanner for the chain (in `src/scanners` directory),and write a `buildChainxNetworkScannerWithExtractors` for create scanner of chainX related network and register observation extractor then add it to the list of scanners in `generateAndRegisterScannersWithExtractors` inside of `src/services/scanner.ts`
-- Add the event trigger extractor for the chain (inside of `src/service/ergoExtractor.ts`)
-- Add relevant constants to `constants.ts`, such as block time
-- The `createChainSpecificDataAdapter` function in `src/services/assetDataAdapters.ts` should be updated by adding chain configurations. These changes depend on the updates in the `@rosen-ui/asset-data-adapter` package, which must be applied first before updating the mentioned file
-- Add two new keys, `chainXScannerWarnDiff` and `chainXScannerCriticalDiff`, under the `healthCheck` section in the `apps/rosen-service/config/default.yaml` file
+- Add chain configuration (scanInterval, chain networks configuration, initialHeight, adapter configuration only if the target chain requires custom asset handling) under the chains section of `configs/schema.json` file
+  [_View file difference in bitcoin-runes integration for some of them_](https://github.com/rosen-bridge/ui/commit/1145634a2c33982187083468fd9c5d30ff07f72d).
+- Create a new scanner file for the chain inside the src/scanners/ directory, and Implement the `buildChainNetworkScannerWithExtractors` function to initialize the scanner and register its observation extractor. then Import this function into `src/services/scanner.ts` and add it to the scanner list inside `generateAndRegisterScannersWithExtractors`.
+- Register the event trigger extractor for the new chain inside `src/services/ergoExtractor.ts`.
+- Add the exact block time constant for the new chain in `constants.ts`.
+- The `@rosen-ui/asset-data-adapter` package must be updated with the new chain support.
+- Add the block difference warning and critical threshold keys under the healthCheck section in `apps/rosen-service/config/default.yaml`.
   ```
   healthCheck:
     chainXScannerWarnDiff: <value>
     chainXScannerCriticalDiff: <value>
   ```
-- set flag True for active parameter in `local.yml` for chainX then `constructor` in `apps/rosen-service2/src/services/healthCheck.ts`  add new health check instance for the new chain scanner
-- Modify the `schema.json` file in `apps/rosen-service2/config/` to include the new keys, ensuring they are properly loaded from the configuration
-
-    [_View file difference in bitcoin-runes integration for some of them_](https://github.com/rosen-bridge/ui/commit/1145634a2c33982187083468fd9c5d30ff07f72d)
+- set flag True for active parameter in `local.yml` for chainX then health check service will automatically instantiate the `ScannerSyncHealthCheckParam`.
 
 #### Network Package
 Building upon the foundation established in [part 1](#network-package-bases), this section focuses on fully implementing all required functionality in the network package. The implementation should include:
