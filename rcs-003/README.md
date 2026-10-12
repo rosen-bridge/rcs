@@ -1,7 +1,7 @@
 # RCS-003: Bridge Expansion Kit
 * Author: [@RaaCT0R](https://github.com/RaaCT0R)
 * Created: 27-May-2025
-* Updated: 1-Dec-2025
+* Updated: 7-Oct-2026
 
 ## Contents
 - [Description](#description)
@@ -113,7 +113,7 @@ Once the requirements are checked and the adaption is confirmed, multiple Rosen 
   4. [Observation Extractor](#observation-extractor)
   5. [Rosen Chain](#rosen-chain)
   6. [Health Check](#health-check)
-  7. [UI (Lock Transaction)](#ui-lock-transaction)
+  7. [UI (Lock Transaction)](#ui)
 
 > Note: This section describes adding a new blockchain with a single network (i.e., a specific API or service used to interact with the blockchain). For adding a new network (e.g., new explorer or API) to an existing chain, refer to the [Extending Networks](#extending-networks) section.
 
@@ -453,7 +453,7 @@ The new modules designed for the integration should seamlessly connect with the 
 To ensure a smooth and organized integration, the following steps should be prioritized and executed in the specified order. These steps have been structured to minimize type conflicts, ensure logical consistency, and allow incremental progress across packages.
 
   1. Add base data for the new chain, which requires changes in following packages:
-      - [Icons](#icon)
+      - [Icons](#icons)
       - [Constants](#constants)
       - [Utils](#utils)
       - [Network Package (Bases)](#network-package-bases)
@@ -483,6 +483,7 @@ export const NETWORKS = {
     label: 'NEW_NETWORK_LABEL',
     nativeToken: 'NEW_NETWORK_NATIVE_TOKEN_ID',
     id: 'NEW_NETWORK_ID',
+    hasTokenSupport: true,
   },
   ...
 } as const;
@@ -511,12 +512,12 @@ the chain shared logic, such as:
 - The new package should be added to the `build.sh` file
 
 #### Rosen App
-These updates are required in the Rosen App (located at `app/rosen`):
+These updates are required in the Rosen App (located at `apps/rosen`):
 
 - Add the new network package to the `package.json` file
-- Add a new directory to `app/networks`, named after the new network key. Three files should be included: `client.ts`, `index.ts` and `server.ts`. The `client.ts` file should export a new instance of the network defined in `@rosen-network/NEW_NETWORK_KEY`. The `index.ts` file should simply re-export the `client.ts`. The `server.ts` file should export the server actions that need to be used in the network constructor within the `client.ts` file
-- Add network API env var to the `.env.example`
-- Import the client instance in the `app/networks/index.ts` file
+- Add a new directory to `src/networks`, named after the new network key. Three files should be included: `client.ts`, `index.ts` and `server.ts`. The `client.ts` file should export a new instance of the network defined in `@rosen-network/NEW_NETWORK_KEY`. The `index.ts` file should simply re-export the `client.ts`. The `server.ts` file should export the server actions that need to be used in the network constructor within the `client.ts` file
+- Add network API env var to the `.env.example` and to the schema in `src/env.ts`
+- Import the client instance in the `src/networks/index.ts` file
 
 #### Asset Calculator
 The new chain logic should be added to the `@rosen-ui/asset-calculator` (located at `packages/asset-calculator`):
@@ -525,7 +526,7 @@ The new chain logic should be added to the `@rosen-ui/asset-calculator` (located
 - Add a chain-specific interface that inherits from `CalculatorInterface` to the `lib/interfaces.ts` file
 
 #### Rosen Service
-The new chain logic should be added to Rosen Service (located at `app/rosen-service`):
+The new chain logic should be added to Rosen Service (located at `apps/rosen-service`):
 
 - Configure asset calculator for Rosen service in `config/default.yaml`, providing the list of addresses to watch, network API urls, etc.
 - Add chain configs (addresses, backend urls, RWT token id, etc.) in `src/configs.ts` file
@@ -574,22 +575,22 @@ Building upon the foundation established in [part 1](#network-package-bases), th
 - Additional required functionality such as chain-specific helper methods
 
 #### Wallet package
-- Add at least one wallet for the chain (_more details to come in the future_), including:
+- Add at least one wallet for the chain, extending the `Wallet` class from `@rosen-ui/wallet-api`, including:
   - Add the wallet icon as an SVG string in a separate TypeScript file and import it into the Wallet class
-  - Wallet connection logic
+  - Wallet connection and disconnection logic
+  - Connection status check logic
   - Address fetching logic
   - Balance fetching logic
   - Transfer logic
   - Availability check logic
-  - Wallet info (e.g., name, label, etc.)
+  - Wallet info (e.g., name, label, link, etc.)
   - Add the list of supported chains
-- In case of adding a new wallet, it's package should also be added to the `build.sh` script
 
 #### Wallet Configuration in Rosen App
 
-- Configure each wallet inside the `apps/rosen/app/wallets` directory
+- Configure each wallet inside the `apps/rosen/src/wallets` directory
 - Create a file with a name similar to the wallet's name, and have this file export a new wallet instance configured using the server-side actions
-- After creating the wallet file, export the wallet instance from the `apps/rosen/app/wallets/index.ts` file to make it accessible throughout the app
+- After creating the wallet file, export the wallet instance from the `apps/rosen/src/wallets/index.ts` file to make it accessible throughout the app
 
 ### Contracts
 Integration into contracts consists of minting the new chain config tokens on Ergo (such as RWT, AWC, etc.) and minting bridge tokens on Ergo and any other chains that are supposed to support them. Note that this is unrelated to the new blockchain's contracts, since the Rosen Bridge structure requires minimal integration on the new chain and usually doesn't need contract development on it.
