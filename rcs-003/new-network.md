@@ -15,7 +15,7 @@ This document outlines the steps to add a new network API to an existing chain i
 ## Introduction
 Adding a new network API is mainly about Watcher and Guard services. This assumes the blockchain is already supported in Rosen Bridge with at least one existing network API. The requirements for each service are different, and this document explains the steps to implement the required modules. Please refer to each module's documentation for details.
 
-> Note: This document is for adding a new network (e.g., a new explorer API) to an existing chain that already has at least one network API. Please refer to [the main document](./main.md) for implementing the first network API. 
+> Note: This document is for adding a new network (e.g., a new explorer API) to an existing chain that already has at least one network API. Please refer to [the main document](./README.md) for implementing the first network API. 
 
 > Note: The naming convention is described in each section. the `ChainX` represents the new blockchain name and `Api` represent the network API that is used. Examples for Bitcoin blockchain and RPC API:
   - `@rosen-chains/chainx-api` -> `@rosen-chains/bitcoin-rpc`
